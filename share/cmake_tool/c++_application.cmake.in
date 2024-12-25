@@ -1,0 +1,124 @@
+#============================================
+# CMakeLists file for %%PROJECT_NAME%%
+#============================================
+cmake_minimum_required(VERSION 3.0)
+project(%%PROJECT_NAME%%)
+set(TARGET_EXE ${PROJECT_NAME})
+
+#============================================
+# Include CMake Modules
+#============================================
+# Include cmake modules if you need
+include(CMakePrintHelpers)
+
+#============================================
+# Compile Options
+#============================================
+# Specified the language standard
+set(CMAKE_CXX_STANDARD 11)
+
+# Configure compile options
+add_compile_options(-Wall -Wextra -pedantic -fPIC)
+
+# Configure marocs if you need
+add_definitions(
+    -DXENOMAI
+)
+
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
+#============================================
+# For Xenomai Configure
+#============================================
+# if(NOT XENO_CONFIG)
+#     find_program(XENO_CONFIG NAMES xeno-config)
+# endif()
+
+# execute_process(
+#     COMMAND ${XENO_CONFIG} --alchemy --posix --cflags
+#     OUTPUT_VARIABLE XENO_CFLAGS
+#     OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+# execute_process(
+#     COMMAND ${XENO_CONFIG} --alchemy --posix --ldflags
+#     OUTPUT_VARIABLE XENO_LDFLAGS
+#     OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+# set(CMAKE_C_FLAGS               "${CMAKE_C_FLAGS} ${XENO_CFLAGS}")
+# set(CMAKE_CXX_FLAGS             "${CMAKE_CXX_FLAGS} ${XENO_CFLAGS}")
+# set(CMAKE_EXE_LINKER_FLAGS      "${CMAKE_EXE_LINKER_FLAGS} ${XENO_LDFLAGS}")
+# set(CMAKE_SHARED_LINKER_FLAGS   "${CMAKE_SHARED_LINKER_FLAGS} ${XENO_LDFLAGS}")
+
+#============================================
+# Add Include And Lib Directories
+#============================================
+include_directories(
+    include
+)
+link_directories(
+)
+
+#============================================
+# Add Source Files
+#============================================
+file(GLOB TARGET_EXE_SRCS "src/*.cpp")
+set(TARGET_LIB_SRCS
+)
+
+#============================================
+# Add Library
+#============================================
+# add_library(${TARGET_LIB}
+#     # SHARED
+#     ${TARGET_LIB_SRCS}
+# )
+
+#============================================
+# Add Executable
+#============================================
+add_executable(${TARGET_EXE}
+    ${TARGET_EXE_SRCS}
+)
+# set RPATH for ${TARGET_EXE}
+set(${TARGET_EXE}_RPATH "\$ORIGIN/../lib:\$ORIGIN/../../lib:\$ORIGIN/../../../lib")
+set_target_properties(${PROJECT_NAME}
+  PROPERTIES
+    # OUTPUT_NAME "rename"
+    LINK_FLAGS "-Wl,--disable-new-dtags"
+    INSTALL_RPATH_USE_LINK_PATH ON
+    INSTALL_RPATH "${${TARGET_EXE}_RPATH}"
+)
+
+#============================================
+# Add Dependencies
+#============================================
+# add_dependencies(${TARGET_EXE}
+# )
+
+#============================================
+# Target Link Libraries
+#============================================
+# target_link_libraries(${TARGET_EXE}
+# )
+
+#============================================
+# Install Targets
+#============================================
+if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+    set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR} CACHE PATH "Default install prefix" FORCE)
+endif()
+cmake_print_variables(CMAKE_INSTALL_PREFIX)
+
+install(TARGETS ${TARGET_EXE} ${TARGET_LIB}
+    RUNTIME DESTINATION bin
+    ARCHIVE DESTINATION lib
+    LIBRARY DESTINATION lib
+)
+
+#============================================
+# Copies share folder to output folder
+#============================================
+# add_custom_command(TARGET ${TARGET_EXE} POST_BUILD
+#     COMMAND ${CMAKE_COMMAND} -E copy_directory
+#     ${CMAKE_CURRENT_SOURCE_DIR}/share $<TARGET_FILE_DIR:${TARGET_EXE}>/share
+# )
